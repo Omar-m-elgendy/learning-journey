@@ -1,0 +1,1 @@
+console.log(__dirname); // __dirname >> global variable >> return the directory name of the current module
