@@ -79,7 +79,7 @@ let filepath = "F:\Omar\Back End Node.js\MODULES (2)\Session 1\attachments\ali\m
 
 // file system
 // fs >> file system >> built in module >> require("node:fs") >> readFileSync() >> writeFileSync() >> appendFileSync() >> unlinkSync() >> readdirSync() >> statSync() >> createReadStream() >> createWriteStream()
-const fs = require("node:fs");
+//const fs = require("node:fs");                                                                                                                                                                                               **********
 // 1- read file
 // high level methods >> readFile - readFileSync - low level methods >> open >> read >> close 
 
@@ -178,36 +178,154 @@ const fs = require("node:fs");
 
 //read
 
-const{EventEmitter} = require("node:events");
-const readStream = fs.createReadStream("./data.txt");
-console.log(readStream instanceof EventEmitter);
-readStream.on("open", () => {
-    console.log("file is opened");
-});
-readStream.on("ready", () => {
-    console.log("file is ready to be read"); // file is ready for streaming
-});
-readStream.on("data", (chunk) => {
-    console.log("====================================");
-    console.log("=====================================");
-    console.log(chunk);
-    readStream.pause(); // pause the stream
-    setTimeout(() => {
-        readStream.resume(); // resume the stream
-    }, 1000);
-});
-readStream.on("close", () => {
-    console.log("file is read completely"); // file is closed
-});
-readStream.on("pause", () => {
-    console.log("file is paused");
-});
-readStream.on("resume", () => {
-    console.log("file is resumed");
-});
+//const{EventEmitter} = require("node:events");
+//const { stream } = require("undici-types");
+//const { pipeline } = require("node:stream");
+//const readStream = fs.createReadStream("./data.txt");
+//console.log(readStream instanceof EventEmitter);
+//readStream.on("open", () => {
+//    console.log("file is opened");
+//});
+//readStream.on("ready", () => {
+//    console.log("file is ready to be read"); // file is ready for streaming
+//});
+//readStream.on("data", (chunk) => {
+//    console.log("====================================");
+//    console.log("=====================================");
+//    console.log(chunk);
+//    readStream.pause(); // pause the stream
+//    setTimeout(() => {
+//        readStream.resume(); // resume the stream
+//   }, 1000);
+//});
+//readStream.on("close", () => {
+//    console.log("file is closed"); // file is read completely
+//});
+//readStream.on("pause", () => {
+//    console.log("file is paused");
+//});
+//readStream.on("resume", () => {
+//    console.log("file is resumed");
+//}); 
 
 
+ //write
 
+
+ //reqire("node:stream");
+//const fs = require("node:fs");
+//const { pipeline, Transform }= require("node:stream");
+//const writeStream = fs.createWriteStream("./data-copy.txt");
+//const readStream = fs.createReadStream("./data.txt");
+// write streeam >>data typr >> object >> mn enstincae of event emitter >> on emit  , and the rest of events>>open
+
+// create write stream high level method wla low level method ??
+//readStream.on("data", (chunk) => {
+//    writeStream.write(chunk); // emit event data
+//});
+
+//readStream.on("end", () => {
+//    writeStream.end(); // emit event end
+//});
+
+
+//writeStream.write("my first name is omar ,and my last is elgendy  \n"); // emit event data
+//writeStream.write("my first name is omar ,and my last is elgendy  \n");
+//writeStream.write("my first name is omar ,and my last is elgendy  \n");
+//writeStream.write("my first name is omar ,and my last is elgendy  \n");
+//writeStream.end(); // emit event end
+//writeStream.write("my first name is omar ,and my last is elgendy  \n"); 
+// this will not work because the stream is ended , cause you write after end streaming
+
+//readStream.pipe(writeStream);
+
+// transform >> read >> transform >> write
+//caleed (pipe line) >> 
+
+//const transform = new Transform({
+//    transform:(chunk, encoding, callback) => {
+//        chunk = chunk.toString().toUpperCase();
+//        callback(null, chunk); 
+//        // callback >> error first callback >> null >> no error >> chunk >> data to be written
+//    },
+//});
+
+//pipeline(readStream, transform, writeStream, (err) => {
+//    if (err) {
+//        console.log(err.message);
+//    }
+//});
+
+//url >> pyhsical address of the file >> absolute path >> relative path 
+// http 
+const http = require("node:http");  
+const fs =  require("node:fs");
+// file js functions
+// variable type >> object
+const server = http.createServer((req, res) => {     //request, response
+    const { url, method } = req; // destructuring >> url >> string >> path of the request >> method >> string >> type of the request
+    console.log({ url, method }); 
+    if (url == "/products" && method == "GET") {
+        const data = fs.readFileSync("./data.json");
+        res.setHeader("Content-Type", "application/json"); // meta data >> header >> key value pair >> content type >> application/json >> data type of the response
+        res.write(data); 
+        res.end();
+        //console.log("get all products");
+        //res.write("products");
+        //res.end(); // instance >> eventEmitter >> writeStream
+    } else if (url == "/products" && method == "POST") {
+        let body = "";
+        req.on("data", (chunk) => {
+            body += chunk; // reassignment >> body = body + chunk >> string + buffer >> string ... concatenation 
+        });
+        req.on("end", () => {
+            res.statusCode = 201;
+            res.setHeader("Content-Type", "application/json"); // meta data
+            res.write(JSON.stringify({message:"product created successfully", success:true}));
+            res.end();
+        });
+    } else {
+        res.statusCode = 404;
+        res.setHeader("Content-Type", "application/json"); // meta data
+        res.end(JSON.stringify({message:"invaild router",success:false}));
+    } 
+}); // any requset has 2 keys in terminal 1- url >> 2- method
+
+// method inside the module http >> create a server >> return an instance of the server class
+// URL contains of protocol >>
+//   1- http
+//  ,2- https
+//  ,3- host >> domain name >> port number >> path >> query string >> hash 
+server.listen(3000, () => {
+    console.log("server is running on port 3000");
+});
+// to make sure this app is running 
+// we make a call back function 
+/**
+ * ports are saved 
+ * 1- well known ports >> 0-1023 >> used by system processes and applications that require elevated privileges
+ * 2- registered ports >> 1024-49151 >> used by user processes or applications that are not considered as well-known ports
+ * 3- dynamic or private ports >> 49152-65535 >> used for dynamic allocation by applications when they need to establish a connection
+ * mssql >> 3306
+ * skype >> 3306
+ * mongodb >>27017
+ * apache >> 88 , 81
+ * react >> 5000
+ * angular >> 4200
+ * node js >> 3000
+ */
+
+///////// routing
+
+/**
+ * /products GET  >> get all products
+ * /products/:id GET  >> get product by id
+ * /products POST  >> create new product
+ * /products put >> update all the data of the product
+ * /products patch >> update some data of the product 
+ * /products delete
+ * /products options
+ */
 
 
 
