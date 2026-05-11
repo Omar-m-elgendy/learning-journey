@@ -29,10 +29,10 @@ app.use(express.json()); // global middleware >> for all routes
 app.post("/users", (req, res, next) => {
     //get data from request body
     const { name, email, password } = req.body;
-    // prepare query to execute in DB
-    let query = `INSERT INTO drivers (name, email, password) VALUES ("${name}", "${email}", "${password}")`;
+    // prepare query to execute in DB  ?? sql injection 
+    let query = `INSERT INTO drivers (name, email, password) VALUES (?, ?, ?)`;
     // prepare statment
-    dbConnection.execute(query, (error, results) => {
+    dbConnection.execute(query, [name, email, password], (error, results) => {
         if (error) {
             if (error.errorno === 1062) {
                 return res.status(409).json({ message: "email already exists", success: false });
